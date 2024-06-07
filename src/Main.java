@@ -180,8 +180,23 @@ public class Main {
 
             while(rs.next()){
                 String table_name = rs.getString(3);
-                boolean view = (rs.getString(4).equals("VIEW"));
-                System.out.println((view) ? "\t" + table_name : table_name);
+                ResultSet rscol = md.getColumns(database_name, null, table_name, null);
+                List<String> pks = new ArrayList<String>();
+
+                ResultSet pkrs = md.getPrimaryKeys(database_name, null, table_name);
+                while(pkrs.next()){
+                    pks.add(pkrs.getString(4));
+                }
+
+                System.out.println(table_name);
+
+                while(rscol.next()){
+                    String name = rscol.getString(4);
+                    String type = rscol.getString(6);
+                    int size = rscol.getInt(7);
+                    boolean pk = pks.contains(name);
+                    System.out.println("\t" + name + " " + type + "(" + size + ") " + ((pk) ? "(PK)": ""));
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
