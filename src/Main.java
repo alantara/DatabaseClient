@@ -90,14 +90,14 @@ public class Main {
 
     private static void queryExecuteQuery(String query){
         try{
-            ResultSet rs = db.getStatement().executeQuery(query);
+            ResultSet rs = db.getStatement().executeQuery(query + " LIMIT " + maxRows);
 
             ResultSetMetaData rsmd = rs.getMetaData();
             int columns = rsmd.getColumnCount();
             List<String> fields = CreateRowsList(rs);
 
             Table table = new Table(fields, columns);
-            table.DrawTable(maxRows);
+            table.DrawTable();
             System.out.println((fields.size()/columns-1) + " rows in set");
             System.out.println("Display limited by " + maxRows + " rows. Call \\m [rows] to change this limit.");
         } catch (SQLException e){
@@ -215,7 +215,7 @@ public class Main {
                 fields.add(table_name);
             }
             Table table = new Table(fields, 1);
-            table.DrawTable(maxRows);
+            table.DrawTable();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -250,7 +250,7 @@ public class Main {
                 fields.add((pk) ? "true" : "false");
             }
             Table table = new Table(fields, 4);
-            table.DrawTable(maxRows);
+            table.DrawTable();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

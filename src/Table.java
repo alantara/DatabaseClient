@@ -11,7 +11,7 @@ public class Table {
         this.columns = columns;
     }
 
-    public void DrawTable(int maxRows){
+    public void DrawTable(){
         List<Integer> width = CalculateWidth();
         for(int i = 0; i < columns; i++){
             width.set(i, width.get(i) + 6);
@@ -25,7 +25,7 @@ public class Table {
         System.out.println(header);
         System.out.println(separator);
 
-        while(sumFields < data.size() && (sumFields/columns-1) < maxRows){
+        while(sumFields < data.size()){
             String row = TableFields(width);
             System.out.println(row);
         }
