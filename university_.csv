@@ -1,0 +1,3 @@
+"EXPLAIN"
+"-> Table scan on instructor  (cost=1.45 rows=12) (actual time=0.142..0.145 rows=12 loops=1)
+"

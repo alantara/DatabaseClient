@@ -24,9 +24,10 @@ public class Main {
         db = new JDBC();
 
         do{
+            String db_inp = getString("Connect to PostgreSQL? (y/n(default MYSQL)): ");
             username = getString("Enter database user: ");
             password = getString("Enter database password: ");
-            db_type = DB_TYPE.MYSQL;
+            db_type = db_inp.equals("y") ?DB_TYPE.POSTGRESQL : DB_TYPE.MYSQL;
 
             db.connect(db_type, username, password, "");
         }while(db.connection_failed);
@@ -73,8 +74,11 @@ public class Main {
 
     private static void queryCommand(String query){
         String command = query.split(" ")[0].toLowerCase();
+
+        query = query.replaceAll(";", "");
         switch (command){
-            case "select", "explain" -> queryExecuteQuery(query);
+            case "select", "explain" -> queryExecuteQuery(query, true);
+            case "describe", "show" -> queryExecuteQuery(query, false);
             case "insert", "update", "delete" -> queryExecuteUpdate(query);
             default -> queryExecute(query);
         }
@@ -88,9 +92,14 @@ public class Main {
         }
     }
 
-    private static void queryExecuteQuery(String query){
+    private static void queryExecuteQuery(String query, boolean limit){
         try{
-            ResultSet rs = db.getStatement().executeQuery(query + " LIMIT " + maxRows);
+            ResultSet rs;
+            if(limit){
+                 rs = db.getStatement().executeQuery(query + " LIMIT " + maxRows);
+            }else {
+                rs = db.getStatement().executeQuery(query);
+            }
 
             ResultSetMetaData rsmd = rs.getMetaData();
             int columns = rsmd.getColumnCount();
@@ -141,16 +150,8 @@ public class Main {
 
         while(rs.next()){
             for(int i = 1; i <= columns; i++){
-                switch (rsmd.getColumnType(i)){
-                    case Types.INTEGER, Types.DECIMAL -> {
-                        int field = rs.getInt(i);
-                        fields.add(String.valueOf(field));
-                    }
-                    case Types.VARCHAR -> {
-                        String field = rs.getString(i);
-                        fields.add(field);
-                    }
-                }
+                String str = rs.getString(i);
+                fields.add(String.valueOf(str));
             }
         }
         return fields;
@@ -176,7 +177,8 @@ public class Main {
     public static void treeCommand(){
         try {
             DatabaseMetaData md = db.getConnection().getMetaData();
-            ResultSet rs = md.getTables(database_name, null, "%", null);
+            String[] types = {"TABLE", "VIEW"};
+            ResultSet rs = md.getTables(database_name, null, "%", types);
 
             while(rs.next()){
                 String table_name = rs.getString(3);
@@ -206,7 +208,8 @@ public class Main {
     public static void tablesCommand(){
         try {
             DatabaseMetaData md = db.getConnection().getMetaData();
-            ResultSet rs = md.getTables(database_name, null, "%", null);
+            String[] types = {"TABLE", "VIEW"};
+            ResultSet rs = md.getTables(database_name, null, "%", types);
 
             List<String> fields = new ArrayList<String>();
             fields.add("tables");
@@ -264,7 +267,17 @@ public class Main {
     }
 
     public static void changeMaxRowsCommand(String new_max){
-        maxRows = Integer.parseInt(new_max);
+        try{
+            Integer rows = Integer.parseInt(new_max);
+            if (rows >= 0 && rows <= 1000)
+                maxRows = rows;
+            else
+                throw new Exception();
+        }
+        catch (Exception e){
+            System.out.println("Insira um valor válido");
+        }
+
     }
 
     public static String getString(String msg){

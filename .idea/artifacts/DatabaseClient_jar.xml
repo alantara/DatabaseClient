@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact name="DatabaseClient:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/DatabaseClient_jar</output-path>
+    <root id="root">
+      <element id="archive" name="DatabaseClient.jar">
+        <element id="module-output" name="DatabaseClient" />
+      </element>
+      <element id="file-copy" path="/usr/share/java/mysql-connector-j-8.4.0.jar" />
+      <element id="file-copy" path="$USER_HOME$/Downloads/postgresql-42.7.3.jar" />
+      <element id="file-copy" path="$USER_HOME$/Downloads/opencsv-5.9.jar" />
+    </root>
+  </artifact>
+</component>
