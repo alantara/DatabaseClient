@@ -25,11 +25,13 @@ public class Main {
 
         do{
             String db_inp = getString("Connect to PostgreSQL? (y/n(default MYSQL)): ");
+            if(db_inp.equals("y"))
+                database_name = getString("Enter database name: ");
             username = getString("Enter database user: ");
             password = getString("Enter database password: ");
             db_type = db_inp.equals("y") ?DB_TYPE.POSTGRESQL : DB_TYPE.MYSQL;
 
-            db.connect(db_type, username, password, "");
+            db.connect(db_type, username, password, database_name);
         }while(db.connection_failed);
 
         System.out.println("Connected to database. To see a list of commands type \\h.");
